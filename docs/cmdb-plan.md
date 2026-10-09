@@ -2,6 +2,8 @@
 
 Goal: a small but realistic CMDB that mirrors the real home lab, with relationships that make impact analysis work. Items marked **(confirm)** are things I'm unsure about, so check them against your actual setup before entering them.
 
+**Build status:** a core set was built in the instance: SYKESHOMESERVER, Home Router, Pi-hole, Home DNS and Ad Blocking, and Home Lab Network Services, with four relationships (see Phase 5 of the README). The remaining CIs below are planned but not built.
+
 ## 1. Business service (top of the tree)
 
 | CI | Class | Notes |

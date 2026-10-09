@@ -2,7 +2,7 @@
 
 Hands-on IT service management lab built on a ServiceNow Personal Developer Instance (PDI), modeled on my earlier [osTicket Help Desk Lab](https://github.com/MrBSykes). The goal is to practice the workflows a Tier 1 / Tier 2 service desk runs every day: role-based access, incident handling, SLAs, a knowledge base, and a CMDB.
 
-**Release:** Australia (PDI) | **Author:** Bryan Sykes | **Status:** Phases 1-4 complete, Phase 5 next
+**Release:** Australia (PDI) | **Author:** Bryan Sykes | **Status:** Phases 1-5 complete (Phase 5 is a core set of the CMDB plan)
 
 ---
 
@@ -14,9 +14,9 @@ Hands-on IT service management lab built on a ServiceNow Personal Developer Inst
 | 2 | Incident categories and priority matrix (impact x urgency) | Complete |
 | 3 | SLA definitions and testing against a P1 incident | Complete. All 8 definitions built; P1 tested end to end (attach, stop, pause, resolve). See [`docs/sla-plan.md`](docs/sla-plan.md) |
 | 4 | Knowledge base with 5 articles from real troubleshooting | Complete. Knowledge base, 4 categories, and 5 published articles. See [`docs/kb-articles.md`](docs/kb-articles.md) |
-| 5 | CMDB of the home lab with relationships and impact analysis | Planned. See [`docs/cmdb-plan.md`](docs/cmdb-plan.md) |
+| 5 | CMDB of the home lab with relationships and impact analysis | Complete as a core set: 5 CIs, 4 relationships, a dependency map, and an incident linked to a CI and a KB article. The full plan in [`docs/cmdb-plan.md`](docs/cmdb-plan.md) is larger; see "Not covered yet" in Phase 5 |
 
-Phase 5 is designed but not yet built. I'll update this table and add screenshots when it is completed.
+Phase 5 covers a core subset of the CMDB plan. The remaining CIs are listed under "Not covered yet" in that section.
 
 ---
 
@@ -216,7 +216,64 @@ All five, Workflow = Published:
 
 ![Knowledge article list](screenshots/30-kb-article-list.png)
 
-**Not covered yet:** linking an article to an incident and the CMDB references (the articles name the related CIs) come in Phase 5.
+The first article is linked to an incident in Phase 5.
+
+---
+
+## Phase 5: CMDB and impact analysis
+
+I built a core set of five configuration items (CIs) instead of the 17 in the full plan, enough to model one real outage end to end: the Pi-hole DNS failure from the knowledge base.
+
+### 1. Create the CIs
+
+Each CI was created in its own class, so the CMDB reflects what each thing is.
+
+| CI | Class | Purpose |
+|---|---|---|
+| SYKESHOMESERVER | Computer | Windows 11 Pro server hosting Docker containers and VMs |
+| Home Router | Network Gear | Verizon G3100 router and DHCP server |
+| Pi-hole | Application | Network-wide DNS sinkhole running in Docker |
+| Home DNS and Ad Blocking | Service | Service that depends on Pi-hole |
+| Home Lab Network Services | Service | Parent service everything rolls up to |
+
+Computers and Network Gear have an **Assigned to** field. Applications and Services have **Owned by** and **Managed by** instead, so I set those to Bryan Sykes. IP addresses and serial numbers were left blank on purpose so none appear in a public repo.
+
+![SYKESHOMESERVER CI](screenshots/31-ci-sykeshomeserver.png)
+
+All five CIs and their classes:
+
+![CI list](screenshots/32-cmdb-ci-list.png)
+
+### 2. Build the relationships
+
+| Parent CI | Relationship | Child CI |
+|---|---|---|
+| Pi-hole | Runs on::Runs | SYKESHOMESERVER |
+| SYKESHOMESERVER | Connected by::Connects to | Home Router |
+| Home DNS and Ad Blocking | Depends on::Used by | Pi-hole |
+| Home Lab Network Services | Depends on::Used by | Home DNS and Ad Blocking |
+
+Pi-hole's Related Items show what it runs on, what depends on it, and the router two levels away:
+
+![Pi-hole related items](screenshots/33-cmdb-relationships.png)
+
+The dependency map from Pi-hole shows the full chain: the router and server on one side, and the two services above it on the other.
+
+![Dependency map](screenshots/34-cmdb-dependency-map.png)
+
+### 3. Impact-analysis incident
+
+Re-created the DNS outage as a Priority 1 incident (INC0010007): caller Kate Olsen, category Network/DNS, **Configuration item = Pi-hole**, assigned to Sam Okafor. I attached knowledge article KB0010001 to it.
+
+![Incident with attached knowledge](screenshots/35-incident-ci-and-kb.png)
+
+Then I resolved it with a resolution code and notes that cite the article. The activity log shows the CI, assignment, and resolution, and the P1 Resolution SLA completed with 8 minutes elapsed against a 4-hour target.
+
+![Resolved incident](screenshots/36-incident-resolved.png)
+
+**Notes on this incident:** no P1 Response SLA row appears in its Task SLAs. It was assigned when it was created, which I believe means its stop condition was already met, but I did not confirm that. The instance's built-in demo SLA is still listed as Paused. The Impacted Services/CIs tab was not captured, so the impact chain above comes from the dependency map.
+
+**Not covered yet:** the other 12 CIs from the plan (Gaming PC, Laptop and SYKES-KALI; Jellyfin, Plex and Pelican Panel; the three VMs; and the Home Media, Home Game Hosting and Identity & Security Lab services) and their relationships.
 
 ---
 
@@ -233,6 +290,9 @@ All five, Workflow = Published:
 | Stop condition field turned red when typing "not empty" | Conditions are built with the field/operator/value builder, not typed | Used the condition builder (Assigned to, is not empty) |
 | P1 Resolution SLA completed as soon as the incident was assigned | Its stop condition fired at assignment instead of at resolution. Found by checking the Task SLA stage and stop time, not just the incident's activity log | Corrected the stop condition to State is Resolved and re-ran the test on a new incident |
 | Create New on Knowledge showed only article templates | Newer releases open a template picker first | Chose the plain Blank template to get the standard article form |
+| First attempt at CIs showed every CI as class Computer | Created from the wrong form, so the router, app and services were Computers | Deleted the four and recreated them from their class lists, checking the form header first |
+| CI list showed only some of my CIs | The filter was on Assigned to, which Applications and Services don't use | Filtered on Created today instead |
+| Knowledge button missing on the incident form | The form layout on this instance doesn't show it | Linked the article through the attached-knowledge table (`m2m_kb_task`); it appears under Related Records |
 | An extra SLA attached to the test incident | The instance ships with built-in demo SLA definitions, including "Priority 1 resolution (1 hour)" | Noted it in the test results; the lab's own definitions are the ones documented here |
 
 ## Lessons learned
@@ -241,6 +301,7 @@ All five, Workflow = Published:
 - **PDIs are reclaimed when idle.** Treat the instance as disposable: export configuration as an **update set** and commit it to this repo so a rebuild takes minutes, not hours. Log in regularly while the project is active.
 - **Assign roles to groups, not individuals.** Group-level role inheritance is easier to audit and scales as the team grows.
 - **Verify results, not just configuration.** The first SLA test looked fine from the incident's activity log, but the Task SLA stop times showed the Resolution SLA had stopped early. Checking the evidence caught a wrong stop condition.
+- **Check the class before filling in a CMDB form.** The same list URL can open the wrong form, and a CI in the wrong class undermines the whole model. Read the form header first.
 - **Verify defaults instead of assuming them.** The priority matrix differed from the documented defaults in one cell, and the SLA targets were adjusted to match what the instance actually does.
 
 ---
