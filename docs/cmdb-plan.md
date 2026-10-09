@@ -62,7 +62,7 @@ Create these in each CI's **Related Items** (or via the CI Relationship Editor).
 
 1. Open a P1 incident titled something like "Network-wide DNS failure" and set its **Configuration item** to `Pi-hole`.
 2. Open the Pi-hole CI and view the **dependency map** (or **Show related items**) to show it affects Home DNS and Ad Blocking and the Home Lab Network Services above it.
-3. Link the incident to **KB0001** using the Knowledge attach button, and resolve it with notes.
+3. Link the incident to **KB0010001** using the Knowledge attach button, and resolve it with notes.
 
 This mirrors a real outage you resolved, so the walkthrough tells a true story.
 

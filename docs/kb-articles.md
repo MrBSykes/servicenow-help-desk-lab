@@ -1,12 +1,14 @@
-# Home Lab Knowledge Base: Draft Articles
+# Home Lab Knowledge Base: Articles
 
 Five articles drawn from real home lab troubleshooting. Each section maps to a field on the ServiceNow Knowledge Article form.
+
+**Status:** all five are published in the instance (see the Phase 4 section of the README). Headings use the article numbers ServiceNow assigned; there is no KB0010003 (that number was consumed without a published article).
 
 **Setup (do once):** Knowledge > Knowledge Bases > New. Name it `Home Lab IT Knowledge Base`, owner `bsykes.admin`, managers `Home Lab Help Desk`. Create categories: `Network & DNS`, `Hardware`, `Operating Systems`, `Security`. Publish each article after review (Draft > Review > Published).
 
 ---
 
-## KB0001: Network-wide internet outage after a static IP change (Pi-hole DNS)
+## KB0010001: Network-wide internet outage after a static IP change (Pi-hole DNS)
 
 - **Category:** Network & DNS
 - **Short description:** Every device loses internet at once after a server's static IP was changed.
@@ -38,7 +40,7 @@ Document the intended static IP in the CMDB record for the server. Set a router 
 
 ---
 
-## KB0002: A website or deal link is blocked or breaks when using Pi-hole
+## KB0010002: A website or deal link is blocked or breaks when using Pi-hole
 
 - **Category:** Network & DNS
 - **Short description:** A legitimate link or page fails to load or won't redirect correctly on the home network.
@@ -68,7 +70,7 @@ Allowlist only domains you've confirmed are needed. Each exception slightly redu
 
 ---
 
-## KB0003: Bootable USB won't create or won't boot in UEFI mode
+## KB0010004: Bootable USB won't create or won't boot in UEFI mode
 
 - **Category:** Operating Systems
 - **Short description:** The installer USB fails to write, is write-protected, or the PC won't boot from it.
@@ -101,7 +103,7 @@ The installer menu loads from the USB.
 
 ---
 
-## KB0004: Random blue screens (MEMORY_MANAGEMENT) after a BIOS update
+## KB0010005: Random blue screens (MEMORY_MANAGEMENT) after a BIOS update
 
 - **Category:** Hardware
 - **Short description:** Repeated MEMORY_MANAGEMENT BSODs on a DDR5 AMD system after a BIOS update.
@@ -131,7 +133,7 @@ Always note the BIOS version and settings before and after changes.
 
 ---
 
-## KB0005: Triage for a suspected ransomware infection and drive health check
+## KB0010006: Triage for a suspected ransomware infection and drive health check
 
 - **Category:** Security
 - **Short description:** Steps to contain a suspected ransomware infection and confirm whether a drive is still healthy.

@@ -2,7 +2,7 @@
 
 Hands-on IT service management lab built on a ServiceNow Personal Developer Instance (PDI), modeled on my earlier [osTicket Help Desk Lab](https://github.com/MrBSykes). The goal is to practice the workflows a Tier 1 / Tier 2 service desk runs every day: role-based access, incident handling, SLAs, a knowledge base, and a CMDB.
 
-**Release:** Australia (PDI) | **Author:** Bryan Sykes | **Status:** Phases 1-2 complete, Phase 3 testing in progress
+**Release:** Australia (PDI) | **Author:** Bryan Sykes | **Status:** Phases 1-4 complete, Phase 5 next
 
 ---
 
@@ -12,11 +12,11 @@ Hands-on IT service management lab built on a ServiceNow Personal Developer Inst
 |---|---|---|
 | 1 | Users, groups, and role-based access (`itil`) | Complete |
 | 2 | Incident categories and priority matrix (impact x urgency) | Complete |
-| 3 | SLA definitions and testing against a P1 incident | In progress. All 8 definitions built and attached to a test incident; final outcome evidence being captured. See [`docs/sla-plan.md`](docs/sla-plan.md) |
-| 4 | Knowledge base with 5 articles from real troubleshooting | Drafted. See [`docs/kb-articles.md`](docs/kb-articles.md) |
+| 3 | SLA definitions and testing against a P1 incident | Complete. All 8 definitions built; P1 tested end to end (attach, stop, pause, resolve). See [`docs/sla-plan.md`](docs/sla-plan.md) |
+| 4 | Knowledge base with 5 articles from real troubleshooting | Complete. Knowledge base, 4 categories, and 5 published articles. See [`docs/kb-articles.md`](docs/kb-articles.md) |
 | 5 | CMDB of the home lab with relationships and impact analysis | Planned. See [`docs/cmdb-plan.md`](docs/cmdb-plan.md) |
 
-Phases 4-5 are designed but not yet built. I'll update this table and add screenshots as each one is completed.
+Phase 5 is designed but not yet built. I'll update this table and add screenshots when it is completed.
 
 ---
 
@@ -132,7 +132,7 @@ Testing it on a new incident form: Impact 1 - High and Urgency 1 - High resolves
 
 ---
 
-## Phase 3: SLA definitions (in progress)
+## Phase 3: SLA definitions and testing
 
 ### 1. Create a 24x7 schedule
 
@@ -158,29 +158,65 @@ All eight definitions:
 
 ### 3. Test: a P1 incident from creation to resolution
 
-To prove the SLAs work, I simulated the DNS outage from the knowledge base plan (see [`docs/kb-articles.md`](docs/kb-articles.md), KB0001).
+To prove the SLAs work, I simulated the DNS outage from the knowledge base plan (see [`docs/kb-articles.md`](docs/kb-articles.md), KB0010001): caller Kate Olsen, category Network/DNS, short description "Network-wide DNS failure - Pi-hole unreachable", Impact 1 and Urgency 1, which resolves to Priority 1 - Critical.
 
-**Create the incident.** Caller Kate Olsen, Category Network/DNS, short description "Network-wide DNS failure - Pi-hole unreachable", Impact 1 and Urgency 1, which resolves to Priority 1 - Critical.
+**SLAs attach.** On save, three Task SLAs attached and started counting: my P1 Response and P1 Resolution definitions, plus a built-in "Priority 1 resolution (1 hour)" SLA that ships with the instance's demo data. (This capture is from the first test incident, INC0010002.)
 
-![P1 incident INC0010002](screenshots/23-incident-p1-slas-attached.png)
+![Task SLAs attached](screenshots/23-incident-p1-slas-attached.png)
 
-**SLAs attach.** On save, three Task SLAs attached and started counting: my P1 Response and P1 Resolution definitions, plus a built-in "Priority 1 resolution (1 hour)" SLA that ships with the instance's demo data.
+The next three captures are from the second, corrected run (INC0010006); see the troubleshooting log for why it was repeated.
 
-![Task SLAs attached](screenshots/23.5-incident-p1-slas-attached.png)
+**Assign to Tier 1.** Assigned to Sam Okafor. The Response SLA completed in 32 seconds, and the Resolution SLA kept running.
 
-**Assign to Tier 1.** Assigned to Sam Okafor, and the incident moved from New to In Progress.
+![Response SLA completed](screenshots/24-incident-response-sla-achieved.png)
 
-![Assigned to Sam Okafor](screenshots/24-incident-response-sla-achieved.png)
+**Put it on hold.** Setting the state to On Hold paused the P1 Resolution SLA (stage Paused), which stops its clock while the ticket waits.
 
-**Put it on hold.** Set the state to On Hold, which is the pause condition for the Resolution SLA.
+![Resolution SLA paused](screenshots/25-incident-resolution-sla-paused.png)
 
-![On Hold](screenshots/25-incident-sla-paused.png)
+**Resolve.** Resolving the incident completed the P1 Resolution SLA with 1 minute of business time elapsed against a 4-hour target, so it did not breach.
 
-**Resolve.** Resolved with the resolution code "Solution provided" and the note "Corrected static IP typo on Pi-hole host, DNS restored."
+![Resolution SLA completed](screenshots/26-incident-resolved-slas-achieved.png)
 
-![Resolved](screenshots/26-incident-resolved-slas-achieved.png)
+**Not covered yet:** only Priority 1 was tested end to end. P2-P4 definitions exist but were not exercised, and the 50/75/100% escalation notifications and a deliberate breach test from the SLA plan are not built.
 
-<!-- TODO: add a screenshot of the Task SLAs tab on INC0010002 after resolution, showing Stage = Completed and Has breached = false -->
+---
+
+## Phase 4: Knowledge base
+
+### 1. Create the knowledge base
+
+Created **Home Lab IT Knowledge Base** with Bryan Sykes as owner, Bryan Sykes and Sam Okafor as managers, and the Instant Publish flow so articles go live on save.
+
+![Knowledge base record](screenshots/27-kb-home-lab-it-knowledge-base.png)
+
+### 2. Add categories
+
+Four categories, attached to the knowledge base: Network & DNS, Hardware, Operating Systems, and Security.
+
+![Knowledge base categories](screenshots/28-kb-categories.png)
+
+### 3. Publish five articles
+
+The articles come from real problems I solved in my home lab, rewritten in a Symptoms, Cause, Resolution, Verification format so a Tier 1 agent can follow them. Drafts are in [`docs/kb-articles.md`](docs/kb-articles.md).
+
+| Article | Title | Category |
+|---|---|---|
+| KB0010001 | Network-wide internet outage after a static IP change (Pi-hole DNS) | Network & DNS |
+| KB0010002 | A website or deal link is blocked or breaks when using Pi-hole | Network & DNS |
+| KB0010004 | Bootable USB won't create or won't boot in UEFI mode | Operating Systems |
+| KB0010005 | Random blue screens (MEMORY_MANAGEMENT) after a BIOS update | Hardware |
+| KB0010006 | Triage for a suspected ransomware infection and drive health check | Security |
+
+The first article, published:
+
+![KB0010001 published](screenshots/29-kb-article-dns-outage.png)
+
+All five, Workflow = Published:
+
+![Knowledge article list](screenshots/30-kb-article-list.png)
+
+**Not covered yet:** linking an article to an incident and the CMDB references (the articles name the related CIs) come in Phase 5.
 
 ---
 
@@ -195,6 +231,8 @@ To prove the SLAs work, I simulated the DNS outage from the knowledge base plan 
 | Priority 5 never appeared in testing | The lookup rules on this release map Impact 3 + Urgency 3 to Priority 4 | Verified the rules table and updated the SLA plan to cover priorities 1-4 |
 | No 24x7 option in the SLA Schedule field | This release has no built-in 24x7 schedule | Created a `24x7` schedule with an all-day daily entry |
 | Stop condition field turned red when typing "not empty" | Conditions are built with the field/operator/value builder, not typed | Used the condition builder (Assigned to, is not empty) |
+| P1 Resolution SLA completed as soon as the incident was assigned | Its stop condition fired at assignment instead of at resolution. Found by checking the Task SLA stage and stop time, not just the incident's activity log | Corrected the stop condition to State is Resolved and re-ran the test on a new incident |
+| Create New on Knowledge showed only article templates | Newer releases open a template picker first | Chose the plain Blank template to get the standard article form |
 | An extra SLA attached to the test incident | The instance ships with built-in demo SLA definitions, including "Priority 1 resolution (1 hour)" | Noted it in the test results; the lab's own definitions are the ones documented here |
 
 ## Lessons learned
@@ -202,6 +240,7 @@ To prove the SLAs work, I simulated the DNS outage from the knowledge base plan 
 - **Dependency order matters.** Reference fields need their target records to exist first, so users come before group managers and memberships.
 - **PDIs are reclaimed when idle.** Treat the instance as disposable: export configuration as an **update set** and commit it to this repo so a rebuild takes minutes, not hours. Log in regularly while the project is active.
 - **Assign roles to groups, not individuals.** Group-level role inheritance is easier to audit and scales as the team grows.
+- **Verify results, not just configuration.** The first SLA test looked fine from the incident's activity log, but the Task SLA stop times showed the Resolution SLA had stopped early. Checking the evidence caught a wrong stop condition.
 - **Verify defaults instead of assuming them.** The priority matrix differed from the documented defaults in one cell, and the SLA targets were adjusted to match what the instance actually does.
 
 ---
