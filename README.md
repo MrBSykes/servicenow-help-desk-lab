@@ -2,7 +2,7 @@
 
 Hands-on IT service management lab built on a ServiceNow Personal Developer Instance (PDI), modeled on my earlier [osTicket Help Desk Lab](https://github.com/MrBSykes). The goal is to practice the workflows a Tier 1 / Tier 2 service desk runs every day: role-based access, incident handling, SLAs, a knowledge base, and a CMDB.
 
-For a short overview of what was built, the results, the limitations, and a rebuild checklist, see [`docs/project-summary.md`](docs/project-summary.md).
+**Full write-up:** [`docs/ServiceNow-Help-Desk-Lab-Documentation.pdf`](docs/ServiceNow-Help-Desk-Lab-Documentation.pdf) (18 pages, with screenshots, troubleshooting log, and rebuild checklist). A shorter overview is in [`docs/project-summary.md`](docs/project-summary.md).
 
 **Release:** Australia (PDI) | **Author:** Bryan Sykes | **Status:** Phases 1-5 complete (Phase 5 is a core set of the CMDB plan)
 
@@ -210,9 +210,9 @@ The articles come from real problems I solved in my home lab, rewritten in a Sym
 | KB0010005 | Random blue screens (MEMORY_MANAGEMENT) after a BIOS update | Hardware |
 | KB0010006 | Triage for a suspected ransomware infection and drive health check | Security |
 
-The first article, published:
+The body of the first article (KB0010001):
 
-![KB0010001 published](screenshots/29-kb-article-dns-outage.png)
+![KB0010001 article body](screenshots/29-kb-article-dns-outage.png)
 
 All five, Workflow = Published:
 
@@ -314,6 +314,8 @@ Then I resolved it with a resolution code and notes that cite the article. The a
 .
 ├── README.md
 ├── docs/
+│   ├── ServiceNow-Help-Desk-Lab-Documentation.pdf
+│   ├── ServiceNow-Help-Desk-Lab-Documentation.docx
 │   ├── project-summary.md
 │   ├── kb-articles.md
 │   ├── sla-plan.md
