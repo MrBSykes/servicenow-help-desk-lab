@@ -2,13 +2,13 @@
 
 ## 1. Priority matrix (Impact × Urgency)
 
-ServiceNow calculates Priority from Impact and Urgency. These match the out-of-box values, so you shouldn't need to change anything.
+ServiceNow calculates Priority from Impact and Urgency. This table was verified against the instance's Priority Data Lookup rules (see screenshot 17). Impact 3 + Urgency 3 resolves to **4 - Low** on this release, so incidents never reach Priority 5.
 
 | | Urgency 1 (High) | Urgency 2 (Medium) | Urgency 3 (Low) |
 |---|---|---|---|
 | **Impact 1 (High)** | 1 - Critical | 2 - High | 3 - Moderate |
 | **Impact 2 (Medium)** | 2 - High | 3 - Moderate | 4 - Low |
-| **Impact 3 (Low)** | 3 - Moderate | 4 - Low | 5 - Planning |
+| **Impact 3 (Low)** | 3 - Moderate | 4 - Low | 4 - Low |
 
 **Lab definitions**
 - **Impact 1 (High):** a whole-network or multi-user service is down (DNS, router, domain controller).
@@ -26,9 +26,8 @@ ServiceNow calculates Priority from Impact and Urgency. These match the out-of-b
 | 2 | High | 2 hours | 8 hours | 24x7 |
 | 3 | Moderate | 8 hours (1 business day) | 3 business days | 8-5 weekdays |
 | 4 | Low | 1 business day | 5 business days | 8-5 weekdays |
-| 5 | Planning | None | None | N/A (handled as planned work) |
 
-These are lab-defined targets, chosen to be realistic for a help desk. State that in the writeup.
+These are lab-defined targets, chosen to be realistic for a help desk. Priority 5 is not used because the lookup rules on this release never produce it.
 
 ## 3. SLA definitions to build (Service Level Management > SLA Definitions > New)
 
@@ -42,7 +41,7 @@ Create one **Response** and one **Resolution** definition per priority 1-4 (8 to
 | Table | Incident |
 | Duration type | User specified |
 | Duration | per table above |
-| Schedule | `24x7` or an `8-5 weekdays` schedule (create it under Schedules if missing) |
+| Schedule | `24x7` (created manually, since this release has no built-in 24x7 schedule) or an `8-5 weekdays` schedule |
 | Start condition | Priority is 1 (set per definition) |
 | Pause condition | State is On Hold |
 | Stop condition | Response: Assigned to is not empty (or State is In Progress). Resolution: State is Resolved or Closed |
