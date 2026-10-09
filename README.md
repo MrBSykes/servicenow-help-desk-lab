@@ -2,7 +2,7 @@
 
 Hands-on IT service management lab built on a ServiceNow Personal Developer Instance (PDI), modeled on my earlier [osTicket Help Desk Lab](https://github.com/MrBSykes). The goal is to practice the workflows a Tier 1 / Tier 2 service desk runs every day: role-based access, incident handling, SLAs, a knowledge base, and a CMDB.
 
-**Release:** Australia (PDI) | **Author:** Bryan Sykes | **Status:** Phases 1-2 complete, Phase 3 in progress
+**Release:** Australia (PDI) | **Author:** Bryan Sykes | **Status:** Phases 1-2 complete, Phase 3 testing in progress
 
 ---
 
@@ -12,7 +12,7 @@ Hands-on IT service management lab built on a ServiceNow Personal Developer Inst
 |---|---|---|
 | 1 | Users, groups, and role-based access (`itil`) | Complete |
 | 2 | Incident categories and priority matrix (impact x urgency) | Complete |
-| 3 | SLA definitions, escalation, and breach testing | In progress. P1 Response and Resolution built; remaining priorities and testing next. See [`docs/sla-plan.md`](docs/sla-plan.md) |
+| 3 | SLA definitions and testing against a P1 incident | In progress. All 8 definitions built and attached to a test incident; final outcome evidence being captured. See [`docs/sla-plan.md`](docs/sla-plan.md) |
 | 4 | Knowledge base with 5 articles from real troubleshooting | Drafted. See [`docs/kb-articles.md`](docs/kb-articles.md) |
 | 5 | CMDB of the home lab with relationships and impact analysis | Planned. See [`docs/cmdb-plan.md`](docs/cmdb-plan.md) |
 
@@ -140,15 +140,47 @@ SLA definitions require a schedule, and this release has no built-in 24x7 option
 
 ![24x7 schedule](screenshots/21-schedule-24x7.png)
 
-### 2. P1 SLA definitions
+### 2. SLA definitions
 
-Priority 1 incidents get a 1-hour response target and a 4-hour resolution target, both on the incident table and both starting when **Priority is 1 - Critical**. Pause and stop conditions follow [`docs/sla-plan.md`](docs/sla-plan.md).
+Built a Response and a Resolution definition for each of priorities 1-4 (8 total), all on the incident table. Each starts when the incident's Priority matches. P1 and P2 use the 24x7 schedule; P3 and P4 use business hours. Pause and stop conditions follow [`docs/sla-plan.md`](docs/sla-plan.md).
+
+P1 Response - 1 Hour:
 
 ![P1 Response - 1 Hour](screenshots/19-sla-definition-p1-response.png)
 
+P1 Resolution - 4 Hours:
+
 ![P1 Resolution - 4 Hours](screenshots/20-sla-definition-p1-resolution.png)
 
-**Next:** P2-P4 definitions, then test incidents as Kate, assigned to Sam, to show the SLA attaching, pausing, and resolving within target.
+All eight definitions:
+
+![SLA definitions list](screenshots/22-sla-definitions-list-update.png)
+
+### 3. Test: a P1 incident from creation to resolution
+
+To prove the SLAs work, I simulated the DNS outage from the knowledge base plan (see [`docs/kb-articles.md`](docs/kb-articles.md), KB0001).
+
+**Create the incident.** Caller Kate Olsen, Category Network/DNS, short description "Network-wide DNS failure - Pi-hole unreachable", Impact 1 and Urgency 1, which resolves to Priority 1 - Critical.
+
+![P1 incident INC0010002](screenshots/23-incident-p1-slas-attached.png)
+
+**SLAs attach.** On save, three Task SLAs attached and started counting: my P1 Response and P1 Resolution definitions, plus a built-in "Priority 1 resolution (1 hour)" SLA that ships with the instance's demo data.
+
+![Task SLAs attached](screenshots/23.5-incident-p1-slas-attached.png)
+
+**Assign to Tier 1.** Assigned to Sam Okafor, and the incident moved from New to In Progress.
+
+![Assigned to Sam Okafor](screenshots/24-incident-response-sla-achieved.png)
+
+**Put it on hold.** Set the state to On Hold, which is the pause condition for the Resolution SLA.
+
+![On Hold](screenshots/25-incident-sla-paused.png)
+
+**Resolve.** Resolved with the resolution code "Solution provided" and the note "Corrected static IP typo on Pi-hole host, DNS restored."
+
+![Resolved](screenshots/26-incident-resolved-slas-achieved.png)
+
+<!-- TODO: add a screenshot of the Task SLAs tab on INC0010002 after resolution, showing Stage = Completed and Has breached = false -->
 
 ---
 
@@ -163,6 +195,7 @@ Priority 1 incidents get a 1-hour response target and a 4-hour resolution target
 | Priority 5 never appeared in testing | The lookup rules on this release map Impact 3 + Urgency 3 to Priority 4 | Verified the rules table and updated the SLA plan to cover priorities 1-4 |
 | No 24x7 option in the SLA Schedule field | This release has no built-in 24x7 schedule | Created a `24x7` schedule with an all-day daily entry |
 | Stop condition field turned red when typing "not empty" | Conditions are built with the field/operator/value builder, not typed | Used the condition builder (Assigned to, is not empty) |
+| An extra SLA attached to the test incident | The instance ships with built-in demo SLA definitions, including "Priority 1 resolution (1 hour)" | Noted it in the test results; the lab's own definitions are the ones documented here |
 
 ## Lessons learned
 
